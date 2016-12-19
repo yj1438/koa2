@@ -71,7 +71,7 @@ gulp.task('lint', () => lint([ `${paths.src}/**/*.js`, 'gulpfile.js' ]));
 gulp.task('clean', (done) => del([ paths.dist ], done));
 
 gulp.task('default', (done) => {
-	const command = [ 'node', '--es_staging', '--harmony_proxies' ];
+	const command = [ 'node', '--harmony' ];
 
 	// if debug flag was specified, run node in debug mode
 	if (program.debug) {
