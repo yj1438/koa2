@@ -1,7 +1,7 @@
 import Model from 'models/Model';
 
 const sayHi = async (ctx) => {
-	ctx.body = 'Hello World';
+	ctx.body = await ctx.render('temp', { msg: '好了，你成功了' });
 };
 
 async function loadData(ctx) {
@@ -9,6 +9,6 @@ async function loadData(ctx) {
 }
 
 export default function(router) {
-	router.get('/load-data', loadData);
-	router.get('/say-hi', sayHi);
+	router.get('/load-data/*', loadData);
+	router.get('/say-hi/*', sayHi);
 }

@@ -1,12 +1,13 @@
 /* eslint-disable strict, no-console */
 'use strict';
 
-require('shelljs/global');
-require('shelljs').config.fatal = true;
+// require('shelljs/global');
+// require('shelljs').config.fatal = true;
 
 const path = require('path');
-const fs = require('fs');
+// const fs = require('fs');
 const respawn = require('respawn');
+// const spawn = require('child_process').spawn;
 const program = require('commander');
 const runSequence = require('run-sequence');
 const gulp = require('gulp');
@@ -32,31 +33,29 @@ const paths = {
 	sourceRoot: path.join(__dirname, 'src'),
 };
 
-let babelOptions = null;
-
-// read babel options from .babelrc file
-try {
-	babelOptions = JSON.parse(fs.readFileSync('./.babelrc', 'utf8'));
-}
-catch (ex) {
-	throw new SyntaxError('Error while parsing .babelrc file.');
-}
+// const babelOptions = JSON.parse(fs.readFileSync('./.babelrc', 'utf8'));
 
 function transpile (src, dest) {
 	console.log(gutil.colors.cyan('⚒ Transpiling...'));
-
 	return gulp.src(src)
 		.pipe(plumber())
 		.pipe(cache('transpile'))
 		.pipe(sourcemaps.init())
-		.pipe(babel(babelOptions))
+		.pipe(babel({
+            // presets: [
+            //     "latest"
+            // ],
+			plugins: [
+                // "transform-runtime",
+				'transform-es2015-modules-commonjs',
+			],
+		}))
 		.pipe(sourcemaps.write('.', { sourceRoot: paths.sourceRoot }))
 		.pipe(gulp.dest(dest));
 }
 
 function lint (src) {
 	console.log(gutil.colors.cyan('⚒ Linting...'));
-
 	return gulp.src(src)
 		.pipe(cache('lint'))
 		.pipe(eslint({ useEslintrc: true }))
@@ -64,20 +63,38 @@ function lint (src) {
 		.pipe(eslint.failAfterError());
 }
 
+function copyTpl (src) {
+	src = src || `${paths.src}/views/**/*.html`;
+	return gulp.src(src, { base: './src' })
+		.pipe(gulp.dest('dist'));
+}
+
+gulp.task('copyTpl', () => copyTpl(`${paths.src}/views/**/*.html`));
+
+/**
+ * 源码编译
+ */
 gulp.task('transpile', () => transpile(`${paths.src}/**/*.js`, paths.dist));
 
+/**
+ * ESLINT 代码校验
+ */
 gulp.task('lint', () => lint([ `${paths.src}/**/*.js`, 'gulpfile.js' ]));
 
+/**
+ * 清除老旧编译成果
+ */
 gulp.task('clean', (done) => del([ paths.dist ], done));
 
+/**
+ * 统一任务
+ */
 gulp.task('default', (done) => {
 	const command = [ 'node', '--harmony' ];
-
 	// if debug flag was specified, run node in debug mode
 	if (program.debug) {
 		command.push('--debug');
 	}
-
 	command.push('index.js');
 
 	const monitor = respawn(command, {
@@ -88,7 +105,7 @@ gulp.task('default', (done) => {
 		stdio: 'inherit',
 	});
 
-	runSequence([ 'clean', 'lint' ], 'transpile', () => {
+	runSequence([ 'clean', 'lint' ], 'copyTpl', 'transpile', () => {
 		monitor.start();
 		done();
 	});
