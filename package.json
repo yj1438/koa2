@@ -11,7 +11,7 @@
     "commander": "^2.9.0",
     "del": "^2.1.0",
     "eslint-plugin-babel": "^3.0.0",
-    "gulp": "^3.9.0",
+    "gulp": "github:gulpjs/gulp#4.0",
     "gulp-babel": "^6.1.1",
     "gulp-cached": "^1.1.0",
     "gulp-eslint": "^1.1.1",
@@ -23,9 +23,9 @@
     "shelljs": "^0.5.3"
   },
   "dependencies": {
-    "art-template": "^3.0.3",
+    "art-template": "^3.1.0",
     "koa": "^2.0.0-alpha.3",
     "koa-router": "^7.0.0",
-    "source-map-support": "^0.4.0"
+    "source-map-support": "^0.4.7"
   }
 }

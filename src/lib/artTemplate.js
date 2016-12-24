@@ -2,6 +2,11 @@ import path from 'path';
 import template from 'art-template';
 import fs from 'fs';
 
+/**
+ * koa2 art-template 中间件
+ * @author yinjie
+ * @date 2016-12-16
+ */
 const basePath = process.cwd(),
     viewRoot = path.resolve(basePath, 'views');
 
