@@ -1,3 +1,4 @@
+'use strict';
 import path from 'path';
 import fs from 'fs';
 
@@ -7,7 +8,8 @@ import fs from 'fs';
  */
 const root = process.cwd();
 const controllersDir = path.resolve(__dirname, '../controllers');		//server 常规路由
-const clientBase = path.resolve(root, 'client');					//client 通一路由
+const clientBase = path.resolve(root, '..', 'client');					//client 通一路由
+
 
 function getProjects () {
     const clientProjects = [];
@@ -43,9 +45,15 @@ export default async function registerControllers (router) {
 			require(ctrlFilePath).default(router);
 		});
 	// 加载统一的 spa page
-	getProjects.forEach((baseUrl) => {
-		router.get('/' + baseUrl + '/*', async function (ctx) {
-			ctx.body = await ctx.render('admin_common', { theme: baseUrl });
-		});
-	});
+    try {
+        const projects = await getProjects();
+        projects.forEach((baseUrl) => {
+            router.get('/' + baseUrl + '/*', async function (ctx) {
+                ctx.body = await ctx.render('admin_common', { theme: baseUrl });
+            });
+        });
+    }
+    catch (err) {
+        console.log(err);
+    }
 }

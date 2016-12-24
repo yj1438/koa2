@@ -1,15 +1,9 @@
-/* eslint-disable strict, no-console */
+
 'use strict';
-
-// require('shelljs/global');
-// require('shelljs').config.fatal = true;
-
 const path = require('path');
-// const fs = require('fs');
 const respawn = require('respawn');
-// const spawn = require('child_process').spawn;
 const program = require('commander');
-const runSequence = require('run-sequence');
+
 const gulp = require('gulp');
 const gutil = require('gulp-util');
 const plumber = require('gulp-plumber');
@@ -27,17 +21,21 @@ const env = process.env;
 env.NODE_PATH = env.NODE_PATH || path.resolve(__dirname, 'dist');
 env.NODE_ENV = env.NODE_ENV || 'development';
 
-const paths = {
-	src: 'src',
-	dist: 'dist',
-	sourceRoot: path.join(__dirname, 'src'),
-};
+const PATH_SRC = 'src',
+	PATH_DIST = 'dist',
+	PATH_SOURCE = path.resolve(__dirname, 'src');
 
-// const babelOptions = JSON.parse(fs.readFileSync('./.babelrc', 'utf8'));
+const PATH_JS = `${PATH_SRC}/**/*.js`,
+	PATH_TPL = `${PATH_SRC}/**/*.html`;
 
-function transpile (src, dest) {
+/**
+ * babel 编译
+ * @param {any} src
+ * @returns
+ */
+function transpile () {
 	console.log(gutil.colors.cyan('⚒ Transpiling...'));
-	return gulp.src(src)
+	return gulp.src(PATH_JS, { base: PATH_SRC })
 		.pipe(plumber())
 		.pipe(cache('transpile'))
 		.pipe(sourcemaps.init())
@@ -50,48 +48,51 @@ function transpile (src, dest) {
 				'transform-es2015-modules-commonjs',
 			],
 		}))
-		.pipe(sourcemaps.write('.', { sourceRoot: paths.sourceRoot }))
-		.pipe(gulp.dest(dest));
+		.pipe(sourcemaps.write('.', { sourceRoot: PATH_SOURCE }))
+		.pipe(gulp.dest(PATH_DIST));
 }
 
-function lint (src) {
+/**
+ * eslint
+ * @param {any} src
+ * @returns
+ */
+function lint () {
 	console.log(gutil.colors.cyan('⚒ Linting...'));
-	return gulp.src(src)
+	return gulp.src(PATH_JS)
 		.pipe(cache('lint'))
 		.pipe(eslint({ useEslintrc: true }))
 		.pipe(eslint.format())
 		.pipe(eslint.failAfterError());
 }
 
-function copyTpl (src) {
-	src = src || `${paths.src}/views/**/*.html`;
-	return gulp.src(src, { base: './src' })
-		.pipe(gulp.dest('dist'));
+
+/**
+ * 所有的模板文件移动到 dist
+ * @param {any} src
+ * @returns
+ */
+function moveTpl () {
+	console.log(gutil.colors.cyan('⚒ Moving tpl...'));
+	return gulp.src(PATH_TPL, { base: PATH_SRC })
+		.pipe(gulp.dest(PATH_DIST));
 }
 
-gulp.task('copyTpl', () => copyTpl(`${paths.src}/views/**/*.html`));
 
 /**
- * 源码编译
+ * 将老的构建好的文件删掉
+ * @returns
  */
-gulp.task('transpile', () => transpile(`${paths.src}/**/*.js`, paths.dist));
+function clean () {
+	 return del([ PATH_DIST ]);
+}
 
-/**
- * ESLINT 代码校验
- */
-gulp.task('lint', () => lint([ `${paths.src}/**/*.js`, 'gulpfile.js' ]));
 
-/**
- * 清除老旧编译成果
- */
-gulp.task('clean', (done) => del([ paths.dist ], done));
+function startServe(done) {
+	console.log(gutil.colors.green('Start server ...'));
 
-/**
- * 统一任务
- */
-gulp.task('default', (done) => {
 	const command = [ 'node', '--harmony' ];
-	// if debug flag was specified, run node in debug mode
+	// debug 模式
 	if (program.debug) {
 		command.push('--debug');
 	}
@@ -99,17 +100,11 @@ gulp.task('default', (done) => {
 
 	const monitor = respawn(command, {
 		env,
-		cwd: paths.dist,
+		cwd: PATH_DIST,
 		maxRestarts: 10,
 		sleep: 300,
 		stdio: 'inherit',
 	});
-
-	runSequence([ 'clean', 'lint' ], 'copyTpl', 'transpile', () => {
-		monitor.start();
-		done();
-	});
-
 	monitor
 		.on('stdout', (data) => console.log(data.toString()))
 		.on('stderr', (err) => console.error(err.toString()));
@@ -117,21 +112,29 @@ gulp.task('default', (done) => {
 	function restartMonitor () {
 		monitor.stop(() => monitor.start());
 	}
+	monitor.start();
 
-	gulp.watch(`${paths.src}/**/*.js`, (event) => {
+	gulp.watch([ PATH_JS, PATH_TPL ], (event) => {
 		gutil.log(`File changed: ${gutil.colors.yellow(event.path)}`);
 
 		let isLintError = false;
 
-		lint(`${paths.src}/**/*.js`)
+		lint(PATH_JS)
 			.resume()
 			.on('error', () => isLintError = true)
 			.on('end', () => {
 				if (isLintError) {
 					return;
 				}
-
-				transpile(`${paths.src}/**/*.js`, paths.dist).on('end', restartMonitor);
+				transpile(PATH_JS).on('end', restartMonitor);
 			});
 	});
-});
+
+	done();
+}
+
+gulp.task('default', gulp.series(
+	gulp.parallel(clean, lint),
+	gulp.parallel(transpile, moveTpl),
+	startServe
+));

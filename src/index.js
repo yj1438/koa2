@@ -1,5 +1,6 @@
 // import 'core-js';
 // import 'harmony-reflect';
+'use strict';
 import { install } from 'source-map-support';
 import Koa from 'koa';
 import Router from 'koa-router';

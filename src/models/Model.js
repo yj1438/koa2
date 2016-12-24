@@ -1,3 +1,4 @@
+'use strict';
 import { sleep } from 'lib/utils';
 
 class Model {

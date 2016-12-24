@@ -1,3 +1,4 @@
+'use strict';
 import Model from 'models/Model';
 
 const sayHi = async (ctx) => {

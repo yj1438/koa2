@@ -1,3 +1,4 @@
+'use strict';
 export default async function (ctx, next) {
 	const start = new Date();
 
