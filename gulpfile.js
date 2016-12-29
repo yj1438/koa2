@@ -1,9 +1,8 @@
-
 'use strict';
 const path = require('path');
-const respawn = require('respawn');
-const program = require('commander');
 
+// const program = require('commander');
+const respawn = require('respawn');
 const gulp = require('gulp');
 const gutil = require('gulp-util');
 const plumber = require('gulp-plumber');
@@ -13,18 +12,20 @@ const del = require('del');
 const babel = require('gulp-babel');
 const sourcemaps = require('gulp-sourcemaps');
 
-program.option('-d, --debug', 'Debug mode on');
-program.parse(process.argv);
+// program.option('-d, --debug', 'Debug mode on');
+// program.parse(process.argv);
 
 const env = process.env;
 
 env.NODE_PATH = env.NODE_PATH || path.resolve(__dirname, 'dist');
 env.NODE_ENV = env.NODE_ENV || 'development';
 
-const PATH_SRC = 'src',
-	PATH_DIST = 'dist',
-	PATH_SOURCE = path.resolve(__dirname, 'src');
-
+/**
+ * 主要路径
+ */
+const PATH_SRC = 'src',					// 源代码路径
+	PATH_DIST = 'dist',					// 目标文件夹
+	PATH_SOURCE = path.resolve(__dirname, 'src');			// source-map 路径
 const PATH_JS = `${PATH_SRC}/**/*.js`,
 	PATH_TPL = `${PATH_SRC}/**/*.html`;
 
@@ -93,9 +94,9 @@ function startServe(done) {
 
 	const command = [ 'node', '--harmony' ];
 	// debug 模式
-	if (program.debug) {
-		command.push('--debug');
-	}
+	// if (program.debug) {
+	// 	command.push('--debug');
+	// }
 	command.push('index.js');
 
 	const monitor = respawn(command, {
@@ -114,11 +115,16 @@ function startServe(done) {
 	}
 	monitor.start();
 
-	gulp.watch([ PATH_JS, PATH_TPL ], (event) => {
-		gutil.log(`File changed: ${gutil.colors.yellow(event.path)}`);
-
+	/**
+	 * 开始监听任务
+	 */
+	const watchIns = gulp.watch([ PATH_JS, PATH_TPL ], (watchDone) => {
+		gutil.log(`Watch project is doing ...`);
+		watchDone();
+	});
+	watchIns.on('change', (evt) => {
+		gutil.log(`File change : ${evt}`);
 		let isLintError = false;
-
 		lint(PATH_JS)
 			.resume()
 			.on('error', () => isLintError = true)
@@ -129,7 +135,6 @@ function startServe(done) {
 				transpile(PATH_JS).on('end', restartMonitor);
 			});
 	});
-
 	done();
 }
 

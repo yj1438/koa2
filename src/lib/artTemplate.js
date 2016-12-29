@@ -1,3 +1,4 @@
+
 'use strict';
 import path from 'path';
 import template from 'art-template';

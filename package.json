@@ -2,30 +2,28 @@
   "name": "koa2",
   "version": "1.0.0",
   "description": "",
-  "keywords": [],
-  "author": "",
+  "keywords": ["koa2", "koa-router", "gulp-server"],
+  "author": "yinjie",
   "license": "ISC",
   "devDependencies": {
-    "babel-eslint": "^5.0.0-beta4",
+    "babel-eslint": "^7.1.1",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.2.0",
     "commander": "^2.9.0",
     "del": "^2.1.0",
-    "eslint-plugin-babel": "^3.0.0",
+    "eslint-plugin-babel": "^4.0.0",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-babel": "^6.1.1",
     "gulp-cached": "^1.1.0",
-    "gulp-eslint": "^1.1.1",
+    "gulp-eslint": "^3.0.1",
     "gulp-plumber": "^1.0.1",
     "gulp-sourcemaps": "^1.6.0",
-    "gulp-util": "^3.0.7",
-    "respawn": "^2.0.0",
-    "run-sequence": "^1.1.5",
-    "shelljs": "^0.5.3"
+    "gulp-util": "^3.0.8",
+    "respawn": "^2.0.0"
   },
   "dependencies": {
     "art-template": "^3.1.0",
     "koa": "^2.0.0-alpha.3",
-    "koa-router": "^7.0.0",
-    "source-map-support": "^0.4.7"
+    "koa-router": "^7.0.1",
+    "source-map-support": "^0.4.8"
   }
 }
