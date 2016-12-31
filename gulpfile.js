@@ -15,19 +15,19 @@ const sourcemaps = require('gulp-sourcemaps');
 // program.option('-d, --debug', 'Debug mode on');
 // program.parse(process.argv);
 
-const env = process.env;
-
-env.NODE_PATH = env.NODE_PATH || path.resolve(__dirname, 'dist');
-env.NODE_ENV = env.NODE_ENV || 'development';
 
 /**
  * 主要路径
  */
-const PATH_SRC = 'src',					// 源代码路径
-	PATH_DIST = 'dist',					// 目标文件夹
-	PATH_SOURCE = path.resolve(__dirname, 'src');			// source-map 路径
+const PATH_SRC = 'server/src',					// 源代码路径
+	PATH_DIST = 'server/dist',					// 目标文件夹
+	PATH_SOURCE = path.resolve(__dirname, 'server/src');			// source-map 路径
 const PATH_JS = `${PATH_SRC}/**/*.js`,
 	PATH_TPL = `${PATH_SRC}/**/*.html`;
+
+const env = process.env;
+env.NODE_PATH = env.NODE_PATH || path.resolve(__dirname, PATH_DIST);
+env.NODE_ENV = env.NODE_ENV || 'development';
 
 /**
  * babel 编译
@@ -127,7 +127,9 @@ function startServe(done) {
 		let isLintError = false;
 		lint(PATH_JS)
 			.resume()
-			.on('error', () => isLintError = true)
+			.on('error', () => {
+				isLintError = true;
+			})
 			.on('end', () => {
 				if (isLintError) {
 					return;

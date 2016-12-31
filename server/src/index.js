@@ -4,7 +4,7 @@
 import { install } from 'source-map-support';
 import Koa from 'koa';
 import Router from 'koa-router';
-import logger from 'lib/logger';
+import logger from './lib/logger';
 import template from './lib/artTemplate';
 import routerRegister from './base/routerRegister';
 

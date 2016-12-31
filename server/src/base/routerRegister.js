@@ -8,8 +8,7 @@ import fs from 'fs';
  */
 const root = process.cwd();
 const controllersDir = path.resolve(__dirname, '../controllers');		//server 常规路由
-const clientBase = path.resolve(root, '..', 'client');					//client 通一路由
-
+const clientBase = path.resolve(root, '../..', 'client');					//client 通一路由
 
 function getProjects () {
     const clientProjects = [];
