@@ -1,7 +1,7 @@
 {
 	"parser": "babel-eslint",
 	"env": {
-		"browser": false,
+		"browser": true,
 		"node": true,
 		"es6": true
 	},
@@ -28,7 +28,7 @@
 		"no-shadow-restricted-names": 2,
 		"no-undef": 2,
 		"no-undef-init": 2,
-		"no-unused-vars": 2,
+		"no-unused-vars": 1,
 		"no-use-before-define": 2,
 		"one-var": [ 0, "never" ],
 
@@ -85,7 +85,7 @@
 		"no-with": 2,
 
 		// Style
-		"array-bracket-spacing": [ 2, "always" ],
+		"array-bracket-spacing": [ 0, "always" ],
 		"brace-style": [ 2, "stroustrup", { "allowSingleLine": true } ],
 		"camelcase": 2,
 		"comma-spacing": [ 2, { "before": false, "after": true } ],
@@ -114,7 +114,7 @@
 		"babel/object-curly-spacing": [ 2, "always" ],
 		"operator-linebreak": [ 2, "after" ],
 		"padded-blocks": [ 2, "never" ],
-		"quotes": [ 2, "single" ],
+		"quotes": [ 0, "single" ],
 		"semi-spacing": [ 2, { "before": false, "after": true } ],
 		"keyword-spacing": [ 0, { "before": true } ],
 		"space-before-blocks": 2,

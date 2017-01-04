@@ -15,13 +15,12 @@ const sourcemaps = require('gulp-sourcemaps');
 // program.option('-d, --debug', 'Debug mode on');
 // program.parse(process.argv);
 
-
 /**
  * 主要路径
  */
-const PATH_SRC = 'server/src',					// 源代码路径
-	PATH_DIST = 'server/dist',					// 目标文件夹
-	PATH_SOURCE = path.resolve(__dirname, 'server/src');			// source-map 路径
+const PATH_SRC = 'src',					// 源代码路径
+	PATH_DIST = 'dist',					// 目标文件夹
+	PATH_SOURCE = path.resolve(__dirname, 'src');			// source-map 路径
 const PATH_JS = `${PATH_SRC}/**/*.js`,
 	PATH_TPL = `${PATH_SRC}/**/*.html`;
 
@@ -76,6 +75,7 @@ function lint () {
 function moveTpl () {
 	console.log(gutil.colors.cyan('⚒ Moving tpl...'));
 	return gulp.src(PATH_TPL, { base: PATH_SRC })
+		.pipe(cache('tpl'))
 		.pipe(gulp.dest(PATH_DIST));
 }
 
@@ -88,7 +88,9 @@ function clean () {
 	 return del([ PATH_DIST ]);
 }
 
-
+/**
+ * 启动服务
+ */
 function startServe(done) {
 	console.log(gutil.colors.green('Start server ...'));
 
@@ -124,24 +126,40 @@ function startServe(done) {
 	});
 	watchIns.on('change', (evt) => {
 		gutil.log(`File change : ${evt}`);
-		let isLintError = false;
-		lint(PATH_JS)
-			.resume()
-			.on('error', () => {
-				isLintError = true;
-			})
-			.on('end', () => {
-				if (isLintError) {
-					return;
-				}
-				transpile(PATH_JS).on('end', restartMonitor);
-			});
+		if (evt.endsWith('.html')) {
+			moveTpl()
+				.resume()
+				.on('end', () => {
+					transpile().on('end', restartMonitor);
+				});
+		}
+		else {
+			let isLintError = false;
+			lint()
+				.resume()
+				.on('error', () => {
+					isLintError = true;
+				})
+				.on('end', () => {
+					if (isLintError) {
+						return;
+					}
+					transpile().on('end', restartMonitor);
+				});
+		}
 	});
 	done();
 }
 
+/**
+ * 默认任务
+ * @module gulp#4.0
+ */
 gulp.task('default', gulp.series(
+	// 第一步：clean + lint
 	gulp.parallel(clean, lint),
+	// 第二步：编译 + 移动模板
 	gulp.parallel(transpile, moveTpl),
+	// 第三步：启动服务
 	startServe
 ));

@@ -2,7 +2,11 @@
   "name": "koa2",
   "version": "1.0.0",
   "description": "",
-  "keywords": ["koa2", "koa-router", "gulp-server"],
+  "keywords": [
+    "koa2",
+    "koa-router",
+    "gulp-server"
+  ],
   "author": "yinjie",
   "license": "ISC",
   "devDependencies": {
@@ -11,6 +15,7 @@
     "commander": "^2.9.0",
     "del": "^2.1.0",
     "eslint-plugin-babel": "^4.0.0",
+    "extract-text-webpack-plugin": "^1.0.1",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-babel": "^6.1.1",
     "gulp-cached": "^1.1.0",
@@ -18,12 +23,16 @@
     "gulp-plumber": "^1.0.1",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-util": "^3.0.8",
-    "respawn": "^2.0.0"
+    "koa-static": "^2.0.0",
+    "respawn": "^2.0.0",
+    "webpack": "^1.14.0"
   },
   "dependencies": {
     "art-template": "^3.1.0",
     "koa": "^2.0.0-alpha.3",
     "koa-router": "^7.0.1",
+    "react": "^15.4.1",
+    "react-dom": "^15.4.1",
     "source-map-support": "^0.4.8"
   }
 }

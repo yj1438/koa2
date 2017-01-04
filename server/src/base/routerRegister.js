@@ -2,13 +2,15 @@
 import path from 'path';
 import fs from 'fs';
 
+import config from '../config';
+
 /**
  * Register all controllers with provided router
  * @param  {KoaRouter} router API mount point
  */
 const root = process.cwd();
 const controllersDir = path.resolve(__dirname, '../controllers');		//server 常规路由
-const clientBase = path.resolve(root, '../..', 'client');					//client 通一路由
+const clientBase = path.resolve(root, config.clientDir);					//client 通一路由
 
 function getProjects () {
     const clientProjects = [];
