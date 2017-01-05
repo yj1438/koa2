@@ -27,19 +27,18 @@ const projectName = argv[index + 1],
 
 console.log('开始构建文件：' + projectName);
 
-const userRoot = path.resolve(__dirname, '../../'),
-    buildPath = path.join('baby/static/lg/dist/', projectPathArr[0]),
-    nodeModulesPath = path.resolve(__dirname, 'node_modules');
+const buildPath = path.resolve('dist', projectPathArr[0]);
+const nodeModulesPath = path.resolve(__dirname, 'node_modules');
 
 module.exports = {
     entry: {
         // polyfill: ['babel-polyfill']     //如果是要强力增强兼容性，比如要在低版本桌面浏览器上用，就加上'babel-polyfill'，把整个babel环境都打进去
-        vendor: ['react', 'react-dom'],
-        router: ['react-router'],
-        app: path.join(__dirname, '/src', projectName),
+        // vendor: ['react', 'react-dom'],
+        // router: ['react-router'],
+        app: path.join(__dirname, 'src', projectName),
     },
     resolve: {
-        root: path.resolve('src'),
+        root: 'src',
         extensions: ["", ".js", ".jsx"],
         modulesDirectories: ['node_modules'], //(Default Settings)
     },
@@ -49,9 +48,9 @@ module.exports = {
      */
     // devtool: 'cheap-module-source-map',
     output: {
-        path: path.join(userRoot, buildPath),       //输出路径
+        path: buildPath,       //输出路径
         publicPath: '',                             //src 的 base 路径
-        filename: './[name]_[chunkhash:8].js',      //输出的文件名
+        filename: './[name].js',      //输出的文件名
     },
     plugins: [
         /*
@@ -62,14 +61,21 @@ module.exports = {
                 'NODE_ENV': '"production"',
             },
         }),
-        /*
+        /**
+         * 以下有两套打包策略：commonchunk 和 dllreference，两者都可以将一些公共模块分离出去，区别有下：
+         * commonchunk 只是每次打包的时候进行分离，实际打包量还是全量
+         * dllreference 是在打包前就将公共模块分享出去，每次打包的代码是净业务代码，适合一套构建系统支持多个项目时使用
+         */
+        /* ============================== commonchunk start ====================================
          * 将公共模块分离出去
          */
-        new webpack.optimize.CommonsChunkPlugin({
-            name: [ 'router', 'vendor' ],
-            minChunks: Infinity,
-        }),
-        /*
+        // new webpack.optimize.CommonsChunkPlugin({
+        //     name: [ 'router', 'vendor' ],
+        //     minChunks: Infinity,
+        // }),
+        // ============================== commonchunk end ====================================
+        //
+        /* ============================== dllreference start ====================================
          * 打包时排除 react模块
          * 极大的提高打包速度
          *  这个和上面的那个 webpack.optimize.CommonsChunkPlugin 本质上是一致的，
@@ -78,9 +84,16 @@ module.exports = {
          *  代价只是需要更新核心包时，手动执行一遍 react-dll 相关命令，还会整体变大50K左右，不知道是怎么回事
          */
         new webpack.DllReferencePlugin({
-           context: __dirname,
-           manifest: require(path.join(userRoot, buildPath, 'verdor-manifest.json')),
+            context: '.',
+            //sourceType: "commonsjs2",
+            manifest: require(path.join(__dirname, 'dist', 'react-manifest.json')),
         }),
+        new webpack.DllReferencePlugin({
+            context: '.',
+            //sourceType: "commonsjs2",
+            manifest: require(path.join(__dirname, 'dist', 'router-manifest.json')),
+        }),
+        // ============================== dllreference end ====================================
         // 去重
         new webpack.optimize.DedupePlugin(),
         /*
@@ -93,7 +106,7 @@ module.exports = {
             },
         }),
         //只报出错误或警告，但不会终止编译，建议如果是开发环境可以把这一项去掉
-        new webpack.NoErrorsPlugin(),
+        // new webpack.NoErrorsPlugin(),
         //输出 CSS 文件
         new ExtractTextPlugin('./[name]_[chunkhash:8].css'),
     ],
@@ -142,7 +155,7 @@ module.exports = {
                     return isNpmModule;
                 },
                 query: {
-                    plugins: ['transform-runtime'],
+                    plugins: ['transform-runtime', 'transform-decorators-legacy', 'transform-class-properties'],
                     presets: ['es2015', 'react'],
                 },
             },

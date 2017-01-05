@@ -1,4 +1,3 @@
-'use strict';
 import path from 'path';
 import fs from 'fs';
 
@@ -12,6 +11,9 @@ const root = process.cwd();
 const controllersDir = path.resolve(__dirname, '../controllers');		//server 常规路由
 const clientBase = path.resolve(root, config.clientDir);					//client 通一路由
 
+/**
+ * 获取 client 端的项目目录
+ */
 function getProjects () {
     const clientProjects = [];
     return new Promise((resolve, reject) => {
@@ -37,6 +39,9 @@ function getProjects () {
     });
 }
 
+/**
+ * 注册 client 路由
+ */
 export default async function registerControllers (router) {
 	// 加载每一个 controller
 	fs.readdirSync(controllersDir)
@@ -49,6 +54,12 @@ export default async function registerControllers (router) {
     try {
         const projects = await getProjects();
         projects.forEach((baseUrl) => {
+            /*
+             * 注册 XXX and XXX/** 两咱路由
+             */
+            router.get('/' + baseUrl, async function (ctx) {
+                ctx.body = await ctx.render('admin_common', { theme: baseUrl });
+            });
             router.get('/' + baseUrl + '/*', async function (ctx) {
                 ctx.body = await ctx.render('admin_common', { theme: baseUrl });
             });

@@ -11,12 +11,13 @@ const distPath = 'dist';
 
 module.exports = {
     entry: {
-        verdor: [ 'react', 'react-dom' ],
+        react: [ 'react', 'react-dom' ],
+        router: [ 'react-router' ],
     },
     output: {
         path: distPath, //输出路径
-        filename: '[name]_verdor.js',
-        library: 'verdor_library',
+        filename: '[name].dll.js',
+        library: '[name]_lib',
     },
     plugins: [
         // 将打包环境定为生产环境
@@ -33,13 +34,13 @@ module.exports = {
              * 定义 manifest 文件生成的位置
              * [name] 的部分由 entry 的名字替换
              */
-            path: path.resolve(distPath, 'verdor-manifest.json'),
+            path: path.resolve(distPath, '[name]-manifest.json'),
             /*
              * name
              * dll bundle 输出到哪个全局变更上
              * 和 output.library 一样即可
              */
-            name: 'verdor_library',
+            name: '[name]_lib',
             context: __dirname,
         }),
         //压缩
