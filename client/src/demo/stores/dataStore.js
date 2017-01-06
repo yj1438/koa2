@@ -2,7 +2,7 @@ import { observable, computed } from 'mobx';
 
 class DataStore {
 
-    @observable title = 'TITLE HAHA ~~';
+    @observable title = 'TITLE HAHA ~~ !!!';
 
     @observable list = [];
 
@@ -20,4 +20,6 @@ class DataStore {
 
 }
 
-export default DataStore;
+const dataStore = new DataStore();
+
+export default dataStore;

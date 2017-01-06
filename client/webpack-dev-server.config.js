@@ -88,9 +88,8 @@ module.exports = {
             /**
              * 新版的 react-hot 不能局部刷新了？
              */
-            /*
             {
-                test: /\.jsx$/,
+                test: /\.(js|jsx)$/,
                 loader: 'react-hot',
                 include: [path.join(__dirname, '/src')],
                 exclude: function (filePath) {
@@ -98,7 +97,6 @@ module.exports = {
                     return isNpmModule;
                 },
             },
-            */
             {
                 test: /\.(js|jsx)$/,
                 loader: 'babel',
