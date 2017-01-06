@@ -8,7 +8,7 @@ import Error from './components/error';
 
 const routers = (
     <Router history={browserHistory}>
-        <Route path="/admin/demo" component={Frame}>
+        <Route path="/(:base)/demo" component={Frame}>
             <IndexRoute component={Index} />
             <Route path="index" component={Index} />
         </Route>

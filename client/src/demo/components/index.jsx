@@ -22,6 +22,7 @@ class Index extends Component {
             <div>
                 this is index page!!!
                 welcome to main element.
+                WTF !!!
             </div>
         );
     }

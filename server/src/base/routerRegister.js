@@ -42,26 +42,28 @@ function getProjects () {
 /**
  * 注册 client 路由
  */
-export default async function registerControllers (router) {
+export default async function registerControllers (router, isDev) {
 	// 加载每一个 controller
 	fs.readdirSync(controllersDir)
 		.filter((fileName) => fileName.endsWith('Ctrl.js'))
 		.forEach((fileName) => {
 			const ctrlFilePath = path.join(controllersDir, fileName);
-			require(ctrlFilePath).default(router);
+            console.log(ctrlFilePath);
+			require(ctrlFilePath).default(router);                      // 加载常规 controller
 		});
 	// 加载统一的 spa page
     try {
         const projects = await getProjects();
+        const tplName = isDev ? 'test_common' : 'admin_common';
         projects.forEach((baseUrl) => {
             /*
              * 注册 XXX and XXX/** 两咱路由
              */
             router.get('/' + baseUrl, async function (ctx) {
-                ctx.body = await ctx.render('admin_common', { theme: baseUrl });
+                ctx.body = await ctx.render(tplName, { theme: baseUrl });
             });
             router.get('/' + baseUrl + '/*', async function (ctx) {
-                ctx.body = await ctx.render('admin_common', { theme: baseUrl });
+                ctx.body = await ctx.render(tplName, { theme: baseUrl });
             });
         });
     }

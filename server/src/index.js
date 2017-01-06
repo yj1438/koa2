@@ -5,8 +5,8 @@ import { install } from 'source-map-support';
 import Koa from 'koa';
 import Router from 'koa-router';
 import koaStatic from 'koa-static';
+
 import logger from './lib/logger';
-import logger2 from './lib/logger2';
 import template from './lib/artTemplate';
 import routerRegister from './base/routerRegister';
 
@@ -14,11 +14,10 @@ install();
 
 const app = new Koa();
 const router = new Router({ prefix: '/admin' });
+const routerForDev = new Router({ prefix: '/dev' });
 const staticPath = path.resolve(__dirname, '../../client/dist');
 
 app.use(logger);
-app.use(logger2);
-
 app.use(koaStatic(staticPath, {
 	maxage: 0,
 	hidden: false,
@@ -26,8 +25,10 @@ app.use(koaStatic(staticPath, {
 }));
 app.use(template);
 app.use(router.routes());
+app.use(routerForDev.routes());
 
 routerRegister(router);
+routerRegister(routerForDev, true);
 
 if (!module.parent) {
 	const port = process.env.PORT || 6060;

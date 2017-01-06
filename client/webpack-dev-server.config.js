@@ -12,20 +12,25 @@ const buildPath = path.resolve(__dirname, 'build'),
  * 想对于当前目录
  */
 //===========================================
-const enterFile = 'src/redux_demo/app.jsx';
+const enterFile = 'demo/app.jsx';
 //===========================================
 
 module.exports = {
     //总入口文件
     entry: {
         server: [ 'webpack/hot/dev-server', 'webpack/hot/only-dev-server' ],
-        app: path.join(__dirname, enterFile),
+        app: path.join(__dirname, 'src', enterFile),
+    },
+    output: {
+        path: buildPath,                //输出根目录
+        publicPath: '',                 // 引用资源文件的base路径
+        filename: './[name].js',        //输出文件名
     },
     //入口文件配置解析类型
     resolve: {
         //默认打包文件
         root: 'src',
-        extensions: [ '.js', '.jsx' ],
+        extensions: ['', '.js', '.jsx'],
         modulesDirectories: [ 'node_modules' ],
     },
     //server 配置
@@ -38,16 +43,11 @@ module.exports = {
         port: 9080,
     },
     devtool: 'cheap-module-eval-source-map',
-    output: {
-        path: buildPath,                //输出根目录
-        publicPath: '',                 // 引用资源文件的base路径
-        filename: './[name].js',        //输出文件名
-    },
     plugins: [
         //Enables Hot Modules Replacement
         new webpack.HotModuleReplacementPlugin(),
         //Allows error warnings but does not stop compiling. Will remove when eslint is added
-        new webpack.NoErrorsPlugin(),
+        // new webpack.NoErrorsPlugin(),
         //移动文件，如果发布目录和编辑目录不一致时，可以配置此项将编辑的 www 内容文件转移到发布目录
         /*
         new TransferWebpackPlugin([
@@ -58,16 +58,6 @@ module.exports = {
         */
         //输出 CSS 文件
         new ExtractTextPlugin("./[name].css"),
-
-        /*
-         * 压缩
-         */
-        new webpack.optimize.UglifyJsPlugin({
-            compress: {
-                //supresses warnings, usually from module minification
-                warnings: false,
-            },
-        }),
     ],
     module: {
         //构建前置加载器
@@ -95,23 +85,37 @@ module.exports = {
                 //?{browsers:['> 1%', last 2 version', 'Android >= 4.0']}
                 loader: ExtractTextPlugin.extract("style-loader", "css-loader!autoprefixer-loader!less-loader"),
             },
+            /**
+             * 新版的 react-hot 不能局部刷新了？
+             */
+            /*
             {
-                //React-hot loader and
-                test: /\.(js|jsx)$/,
-                /*
-                 * babel 设置query后就不用 .babelrc 文件了
-                 */
-                loaders: [ 'babel?plugins[]=react-hot-loader/babel,plugins[]=transform-runtime,presets[]=react,presets[]=es2015,presets[]=stage-0' ], //react-hot is like browser sync and babel loads jsx and es6-7
-                include: [ path.join(__dirname, '/src') ],
+                test: /\.jsx$/,
+                loader: 'react-hot',
+                include: [path.join(__dirname, '/src')],
                 exclude: function (filePath) {
                     const isNpmModule = !!filePath.match(/node_modules/);
                     return isNpmModule;
+                },
+            },
+            */
+            {
+                test: /\.(js|jsx)$/,
+                loader: 'babel',
+                include: [path.join(__dirname, '/src')],
+                exclude: function (filePath) {
+                    const isNpmModule = !!filePath.match(/node_modules/);
+                    return isNpmModule;
+                },
+                query: {
+                    plugins: ['transform-runtime', 'transform-decorators-legacy', 'transform-class-properties'],
+                    presets: ['es2015', 'react'],
                 },
             },
         ],
     },
     //eslint config 文件配置路径
     eslint: {
-        configFile: '.eslintrc',
+        configFile: '.eslintrc.json',
     },
 };

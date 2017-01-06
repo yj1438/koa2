@@ -28,6 +28,8 @@ module.exports = {
         }),
         // 去重插件
         new webpack.optimize.DedupePlugin(),
+        // 根据使用率来预测分配序列
+        new webpack.optimize.OccurenceOrderPlugin(),
         // DllPlugin 生成公共模块
         new webpack.DllPlugin({
             /*
@@ -48,6 +50,7 @@ module.exports = {
             compress: {
                 //supresses warnings, usually from module minification
                 warnings: false,
+                comments: false,
             },
         }),
     ],

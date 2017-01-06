@@ -2,7 +2,7 @@ import { observable, computed } from 'mobx';
 
 class DataStore {
 
-    @observable title = 'TITLE';
+    @observable title = 'TITLE HAHA ~~';
 
     @observable list = [];
 

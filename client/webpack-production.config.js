@@ -33,8 +33,10 @@ const nodeModulesPath = path.resolve(__dirname, 'node_modules');
 module.exports = {
     entry: {
         // polyfill: ['babel-polyfill']     //如果是要强力增强兼容性，比如要在低版本桌面浏览器上用，就加上'babel-polyfill'，把整个babel环境都打进去
+        // ============= for CommonsChunkPlugin start =============
         // vendor: ['react', 'react-dom'],
         // router: ['react-router'],
+        // ============= for CommonsChunkPlugin end =============
         app: path.join(__dirname, 'src', projectName),
     },
     resolve: {
@@ -96,6 +98,8 @@ module.exports = {
         // ============================== dllreference end ====================================
         // 去重
         new webpack.optimize.DedupePlugin(),
+        // 根据使用率来预测分配序列
+        new webpack.optimize.OccurenceOrderPlugin(),
         /*
          * 压缩
          */
@@ -103,6 +107,7 @@ module.exports = {
             compress: {
                 //supresses warnings, usually from module minification
                 warnings: false,
+                comments: false,
             },
         }),
         //只报出错误或警告，但不会终止编译，建议如果是开发环境可以把这一项去掉
