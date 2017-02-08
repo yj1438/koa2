@@ -7,6 +7,7 @@ import { match, RouterContext } from 'react-router';
 import routes from '../../../client/src/demo/routers.jsx';
 
 const sayHi = async (ctx) => {
+	console.log(132312);
 	ctx.body = await ctx.render('temp', { msg: '好了，你成功了!!!!！' });
 };
 

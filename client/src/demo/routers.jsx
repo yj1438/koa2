@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Router, IndexRoute, browserHistory } from 'react-router';
+import { Route, IndexRoute } from 'react-router';
 
 import Frame from './components/frame';
 import Index from './components/index';

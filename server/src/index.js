@@ -14,7 +14,7 @@ install();
 
 const app = new Koa();
 const router = new Router({ prefix: '/admin' });
-const routerForDev = new Router({ prefix: '/dev' });
+// const routerForDev = new Router({ prefix: '/dev' });
 const staticPath = path.resolve(__dirname, '../../client/dist');
 
 app.use(logger);
@@ -25,10 +25,10 @@ app.use(koaStatic(staticPath, {
 }));
 app.use(template);
 app.use(router.routes());
-app.use(routerForDev.routes());
+// app.use(routerForDev.routes());
 
 routerRegister(router);
-routerRegister(routerForDev, true);
+// routerRegister(routerForDev, true);
 
 if (!module.parent) {
 	const port = process.env.PORT || 6060;

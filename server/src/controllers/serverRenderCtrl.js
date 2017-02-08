@@ -5,5 +5,5 @@ async function main(ctx) {
 }
 
 export default function(router) {
-	router.get('/render1/*', main);
+	router.get('/aaa/*', main);
 }
