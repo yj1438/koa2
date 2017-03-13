@@ -27,7 +27,7 @@ class Index extends Component {
     render() {
         return (
             <div>
-                this is index page!!! fdsfs
+                this is index page!!!
                 welcome to main element.
                 WTF !!!
                 <button type="button" onClick={this.store.inputTitle.bind(this.store, 'this is new title ttt!')}>click this!</button>

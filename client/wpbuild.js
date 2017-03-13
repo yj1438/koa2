@@ -8,7 +8,8 @@
 const childProcess = require('child_process'),
     argv = process.argv;
 let pathArr = [],
-    isWatch = false;
+    isWatch = false,
+    isHotServer = false;
 
 /**
  * 拼接入口文件名
@@ -28,18 +29,33 @@ else {
 /**
  * 是否是监听模式
  */
-if (argv[3] && argv[3] === '--watch') {
+if (argv.indexOf('--watch') > 1) {
     isWatch = true;
 }
+if (argv.indexOf('--hot') > 1) {
+    isHotServer = true;
+}
+
+
+console.log(argv);
 
 /**
  * 拼接生成命令
  * 因为有监听模式，需要命令执行后挂起，所以用 `spawn` 命令
  *      `spawn` 命令行参数用的是数组 eg.: ['--config', 'webpack-production.config.js']
  */
-const execCommand = 'webpack --config webpack-production.config.js --progress --colors' +
-                    (isWatch ? ' --watch' : '') +
-                    ' --path ' + pathArr.join('/');
+let execMain = '',
+    execCommand = '';
+if (!isHotServer) {
+    execMain = 'webpack';
+    execCommand = 'webpack --config webpack-production.config.js --progress --colors'
+                    + (isWatch ? ' --watch' : '')
+                    + ' --path ' + pathArr.join('/');
+} else {
+    execMain = 'webpack-dev-server';
+    execCommand = 'webpack-dev-server --config webpack-dev-server.config.js --progress --inline --colors'
+                + ' --path ' + pathArr.join('/');
+}
 const params = execCommand.split(' ');
 params.shift(0);
 console.log(params);
@@ -47,7 +63,7 @@ console.log(params);
 /**
  * 开始执行命令
  */
-const cmdProcess = childProcess.spawn('webpack', params);
+const cmdProcess = childProcess.spawn(execMain, params);
 
 cmdProcess.stdout.on('data', (data) => {
     console.log('cmdProcess data printout: ');

@@ -7,19 +7,34 @@ const webpack = require('webpack'),
 
 const buildPath = path.resolve(__dirname, 'build'),
     nodeModulesPath = path.resolve(__dirname, 'node_modules');
+
+
+
+/*
+ * 获取入口文件
+ */
+const argv = process.argv,
+    index = argv.indexOf('--path');
+
+if (index === -1 || !argv[index + 1]) {
+    console.log('缺少入口文件，请添加参数: --path <入口文件相对 src 路径>');
+    return;
+}
+const projectName = argv[index + 1];
+
 /**
  * 需要构建项目的入口文件
  * 想对于当前目录
  */
 //===========================================
-const enterFile = 'demo/app.jsx';
+// const enterFile = 'demo/app.jsx';
 //===========================================
 
 module.exports = {
     //总入口文件
     entry: {
         server: [ 'webpack/hot/dev-server', 'webpack/hot/only-dev-server' ],
-        app: path.join(__dirname, 'src', enterFile),
+        app: path.join(__dirname, 'src', projectName),
     },
     output: {
         path: buildPath,                //输出根目录

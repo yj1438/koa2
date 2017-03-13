@@ -107,8 +107,8 @@ module.exports = {
             compress: {
                 //supresses warnings, usually from module minification
                 warnings: false,
-                comments: false,
             },
+            comments: false,
         }),
         //只报出错误或警告，但不会终止编译，建议如果是开发环境可以把这一项去掉
         // new webpack.NoErrorsPlugin(),

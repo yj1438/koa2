@@ -11,3 +11,14 @@ server:
 client: 
 
 1. `node wpbuild --<project_dir_name>`
+2. npm run sever 
+
+## 对应路径
+
+### 开发环境
+
+/dev/<project_dir_name>
+
+### 生产环境
+
+/admin/<project_dir_name>

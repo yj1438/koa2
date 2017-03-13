@@ -50,8 +50,8 @@ module.exports = {
             compress: {
                 //supresses warnings, usually from module minification
                 warnings: false,
-                comments: false,
             },
+            comments: false,
         }),
     ],
 };
