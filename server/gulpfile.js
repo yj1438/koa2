@@ -117,15 +117,7 @@ function startServe(done) {
 	}
 	monitor.start();
 
-	/**
-	 * 开始监听任务
-	 */
-	const watchIns = gulp.watch([ PATH_JS, PATH_TPL ], (watchDone) => {
-		gutil.log(`Watch project is doing ...`);
-		watchDone();
-	});
-	watchIns.on('change', (evt) => {
-		gutil.log(`File change : ${evt}`);
+	function watchHandle (evt) {
 		if (evt.endsWith('.html')) {
 			moveTpl()
 				.resume()
@@ -147,6 +139,29 @@ function startServe(done) {
 					transpile().on('end', restartMonitor);
 				});
 		}
+	}
+
+	/**
+	 * 开始监听任务
+	 */
+	const watchIns = gulp.watch([ PATH_JS, PATH_TPL, '../client/dist' ], (watchDone) => {
+		gutil.log(`Watch project is doing ...`);
+		watchDone();
+	});
+	watchIns.on('change', (evt) => {
+		gutil.log(`File change : ${evt}`);
+		// 如果是 server 端的变化，重启 server
+		if (evt.indexOf('src/') === 0) {
+			watchHandle(evt);
+		}
+	});
+	watchIns.on('add', (evt) => {
+		gutil.log(`File add : ${evt}`);
+		watchHandle(evt);
+	});
+	watchIns.on('unlink', (evt) => {
+		gutil.log(`File delete : ${evt}`);
+		watchHandle(evt);
 	});
 	done();
 }

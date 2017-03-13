@@ -10,8 +10,7 @@ server:
 
 client: 
 
-1. `node wpbuild --<project_dir_name>`
-2. npm run sever 
+1. `node wpbuild --<project_dir_name>` (--watch/--hot)
 
 ## 对应路径
 
