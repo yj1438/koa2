@@ -32,7 +32,7 @@ else {
 if (argv.indexOf('--watch') > 1) {
     isWatch = true;
 }
-if (argv.indexOf('--hot') > 1) {
+else if (argv.indexOf('--hot') > 1) {
     isHotServer = true;
 }
 
